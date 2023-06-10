@@ -1,0 +1,171 @@
+<style>
+  body {
+    background-image: url('https://media.istockphoto.com/id/1349390515/photo/paperless-workplace-idea-e-signing-electronic-signature-document-management-businessman-signs.jpg?s=1024x1024&w=is&k=20&c=60tt0AgNgFsNDR28IT78VEw0yAsZQ-XsiUbj5zhwXFk=');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.527);
+    background-blend-mode: darken;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .box {
+
+    padding: 50px;
+    background-color: rgba(0, 0, 0, 0.588);
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container {
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+
+  input {
+    height: 30px;
+  }
+</style>
+<div class="container">
+  <div class="box">
+    <br><br>
+    <center>
+      <table border="5" style="background-color: rgba(255, 255, 255, 0.782); color:rgb(0, 0, 0)">
+        <input type="hidden" id="editid" />
+        <tr>
+          <td><input type="text" id="name" /></td>
+          <td>
+            <input type="button" onclick="save()" id="addbtn" value="+" style="width: 35px;" />
+            <input type="button" onclick="save()" id="editbtn" value="edit" />
+          </td>
+        </tr>
+      </table><br />
+
+      <table border="6"
+        style="background-color: rgba(255, 255, 255, 0.884); color:rgb(0, 0, 0);height: 45px; text-align: center; font-size: 14px;">
+        <tbody id="record"></tbody>
+      </table><br>
+
+      <table border="6"
+        style="background-color: rgba(255, 255, 255, 0.884); color:rgb(0, 0, 0);height: 45px; text-align: center; font-size: 14px;">
+        <td>
+          <input type="button" onclick="cleardata()" id="Clear" value="Cleardata" />
+        </td>
+      </table>
+
+    </center>
+  </div>
+</div>
+
+<script type="text/javascript">
+  let data = [];
+  let viewdata = () => {
+    document.getElementById("editbtn").style.display = "none";
+    document.getElementById("addbtn").style.display = "block";
+
+    let record = JSON.parse(localStorage.getItem("user"));
+    let val = record == null ? [] : record;
+    let tbl = "";
+    val.map((v) => {
+      const { userid, name } = v;
+      tbl += `
+                          <tr>
+                              <td style="padding: 10px;">${name}</td>
+                              <td style="padding: 10px;"><button onclick="deletdata(${userid})">Delet</button>
+                              <button onclick="editdata(${userid})">edit</button></td>
+                          </tr>
+                      `;
+    });
+    document.getElementById("record").innerHTML = tbl;
+  };
+  viewdata();
+
+  const save = () => {
+    let userid = document.getElementById("editid").value;
+
+    let name = document.getElementById("name").value;
+
+
+    let obj = {
+      userid: Math.floor(Math.random() * 100000),
+      name: name,
+
+    };
+
+    document.getElementById("name").value = "";
+
+    if (userid) {
+
+      let alldata = JSON.parse(localStorage.getItem("user"));
+      let ans = alldata.filter((val) => {
+        return val.userid == userid;
+      });
+
+      document.getElementById("name").value = ans[0].name = name;
+
+
+      localStorage.setItem('user', JSON.stringify(alldata));
+      document.getElementById('editid').value = "";
+      viewdata();
+
+    } else {
+      if (
+        localStorage.getItem("user") === null ||
+        localStorage.getItem("user") === undefined
+      ) {
+        data.push(obj);
+        localStorage.setItem("user", JSON.stringify(data));
+      } else {
+        let val = JSON.parse(localStorage.getItem("user"));
+        val.push(obj);
+        localStorage.setItem("user", JSON.stringify(val));
+      }
+
+      viewdata();
+    }
+
+  };
+
+  const deletdata = (id) => {
+    let alldata = JSON.parse(localStorage.getItem("user"));
+
+    let ans = alldata.filter((val) => {
+      return val.userid != id;
+    });
+    localStorage.setItem("user", JSON.stringify(ans));
+
+    viewdata();
+  };
+
+  const cleardata = () => {
+    let alldata = JSON.parse(localStorage.getItem("user"));
+
+    let ans = alldata.filter((val) => {
+      return val.name.value = "";
+    });
+    localStorage.setItem("user", JSON.stringify(ans));
+
+    viewdata();
+  };
+
+  const editdata = (id) => {
+    document.getElementById("addbtn").style.display = "none";
+    document.getElementById("editbtn").style.display = "block";
+
+    let val = JSON.parse(localStorage.getItem("user"));
+
+    let ans = val.filter((v) => {
+      return v.userid == id;
+    });
+
+    document.getElementById("name").value = ans[0].name;
+
+    document.getElementById("editid").value = ans[0].userid;
+  };
+</script>
